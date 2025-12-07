@@ -1,0 +1,55 @@
+data_speed = squeeze(out.simout2.signals.values);
+data_current = squeeze(out.simout4.signals.values);
+data_currentabs = squeeze(out.simout.signals.values);
+data_weight = squeeze(out.simout.signals.values);
+% storage = [storage, data(:)];
+
+t = out.tout;
+data_speed_fft = fft(data_speed);
+data_current_fft = fft(data_current);
+data_currentabs_fft = fft(data_currentabs);
+
+% --- แสดงผลข้อมูล ---
+% figure;
+% hold on;
+% plot(t, data);
+% title('Data vs Time');
+% xlabel('Time (s)');
+% ylabel('Amplitude');
+% grid on;
+
+
+
+
+% --- สร้างกราฟ ---
+% figure;
+% plot(abs(data_fft));
+% title('FFT of Data');
+% xlabel('Frequency (Hz)');
+% ylabel('Magnitude');
+% grid on;
+% % 
+fs = 1 / mean(diff(t));
+fc = 10;
+[b,a] = butter(2,fc/fs/2,"low");
+data_speed_filt = filtfilt(b,a,data_speed);
+data_current_filt = filtfilt(b,a,data_current);
+data_currentabs_filt = filtfilt(b,a,data_currentabs);
+
+speed = mean(data_speed_filt);
+current = mean(data_current_filt);
+currentabs = mean(data_currentabs_filt);
+fprintf('Mean Speed: %.2f\n', speed);
+fprintf('Mean Current: %.2f\n', current);
+fprintf('Mean Currentabs: %.2f\n', currentabs);
+% --- แสดงผลข้อมูลที่กรองแล้ว ---
+% figure;
+% plot(t, data, 'b', t, data_filt, 'r');
+% legend('Original Data', 'Filtered Data');
+% title('Original vs Filtered Data');
+% xlabel('Time (s)');
+% ylabel(['Amplitude']);
+% hold off;
+
+% speed = mean(data_filt);
+% disp(speed);

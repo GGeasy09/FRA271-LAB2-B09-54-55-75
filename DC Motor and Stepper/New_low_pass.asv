@@ -1,0 +1,56 @@
+data_speed = squeeze(out.simout2.signals.values);
+data_time = squeeze(out.simout3.signals.values);
+
+last_value = data_time(end);
+t = out.tout;
+
+% --- แสดงผลข้อมูล ---
+% figure;
+% hold on;
+% plot(t, data_weight);
+% title('Data vs Time');
+% xlabel('Time (s)');
+% ylabel('Amplitude');
+% grid on;
+
+
+
+fs = 1 / mean(diff(t));
+fc = 10;
+[b,a] = butter(2,fc/fs/2,"low");
+data_speed_filt = filtfilt(b,a,data_speed);
+% data_current_filt = filtfilt(b,a,data_current);
+% data_currentabs_filt = filtfilt(b,a,data_currentabs);
+% data_weight_filt = filtfilt(b,a,data_weight);
+
+speed = mean(data_speed_filt);
+
+% --- แสดงผลข้อมูลที่กรองแล้ว ---
+% figure;
+% plot(t, data_speed, 'b', t, data_speed_filt, 'r');
+% legend('Original Data', 'Filtered Data');
+% title('Original vs Filtered Data');
+% xlabel('Time (s)');
+% ylabel(['Amplitude']);
+% hold off;
+
+% If your speed is RPM → convert to rad/s
+omega = speed * 2*pi/60;
+
+% Compute acceleration (rad/s^2)
+accel = gradient(omega, time);
+
+% Plot results
+figure;
+subplot(2,1,1);
+plot(time, speed, 'LineWidth', 2);
+xlabel('Time (s)');
+ylabel('Speed (RPM)');
+title('Speed vs Time');
+
+subplot(2,1,2);
+plot(time, accel, 'LineWidth', 2);
+xlabel('Time (s)');
+ylabel('Acceleration (rad/s^2)');
+title('Acceleration vs Time');
+grid on;
